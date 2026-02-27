@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>凯格尔训练计时器</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --text:#eaf0ff;
+      --muted:#aab6d6;
+      --accent:#6ee7ff;
+      --danger:#ff6b6b;
+      --ok:#6dff9a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      background: radial-gradient(1200px 800px at 50% -200px, rgba(110,231,255,.18), transparent 60%) , var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+    .wrap{width:min(720px, 100%); padding:16px 0 28px;}
+    header{
+      display:flex; justify-content:space-between; align-items:flex-end;
+      gap:12px; margin: 8px 4px 14px;
+    }
+    h1{margin:0; font-size:18px; font-weight:700; letter-spacing:.5px;}
+    .sub{margin:0; font-size:12px; color:var(--muted)}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .status{
+      display:flex; flex-direction:column; gap:10px;
+      text-align:center;
+      padding: 16px 14px 12px;
+    }
+    .phase{
+      font-size: 22px;
+      font-weight:800;
+      letter-spacing:.6px;
+    }
+    .phase.sq{color: var(--accent)}
+    .phase.fx{color: var(--ok)}
+    .phase.rest{color: var(--muted)}
+    .timer{
+      font-variant-numeric: tabular-nums;
+      font-size: 68px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    /* ---------- Rhythm Ring ---------- */
+    .ringWrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin: 6px 0 2px;
+    }
+    .ring{
+      width: 190px;
+      height: 190px;
+      position: relative;
+      display:grid;
+      place-items:center;
+    }
+    .ring svg{transform: rotate(-90deg);}
+    .ring .center{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      pointer-events:none;
+    }
+    .breathCue{
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing:.4px;
+    }
+    .breathCue.muted{color: var(--muted)}
+    .breathCue.breatheOut{color: var(--accent)}
+    .breathCue.breatheIn{color: var(--ok)}
+    .centerSmall{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .progress{
+      font-size: 13px; color: var(--muted);
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+      margin-top: 4px;
+    }
+    .pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .controls{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing:.3px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      touch-action: manipulation;
+    }
+    button:active{transform: translateY(1px)}
+    button.primary{
+      background: linear-gradient(180deg, rgba(110,231,255,.22), rgba(110,231,255,.10));
+      border-color: rgba(110,231,255,.35);
+    }
+    button.danger{
+      background: linear-gradient(180deg, rgba(255,107,107,.22), rgba(255,107,107,.10));
+      border-color: rgba(255,107,107,.35);
+    }
+    .grid{
+      display:grid; gap:12px;
+      grid-template-columns: 1fr;
+      margin-top: 14px;
+    }
+    .settings{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    label{
+      font-size: 12px;
+      color: var(--muted);
+      display:block;
+      margin-bottom: 6px;
+    }
+    input, select{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 16px;
+      outline: none;
+    }
+    .toggles{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin-top: 10px;
+    }
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      user-select:none;
+    }
+    .toggle input{width:18px; height:18px;}
+    .hint{
+      margin: 10px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .footer{
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>凯格尔训练计时器</h1>
+        <p class="sub">按提示：收缩 → 放松（配合呼吸）</p>
+      </div>
+      <div class="pill" id="audioState">🔇 未解锁声音</div>
+    </header>
+
+    <div class="card status" id="statusCard">
+      <div class="phase rest" id="phaseText">准备</div>
+
+      <!-- Rhythm Ring -->
+      <div class="ringWrap">
+        <div class="ring" aria-label="节奏圆环">
+          <svg width="190" height="190" viewBox="0 0 190 190" role="img">
+            <!-- track -->
+            <circle cx="95" cy="95" r="78"
+              stroke="rgba(255,255,255,.10)" stroke-width="14" fill="none"></circle>
+            <!-- progress -->
+            <circle id="ringProgress" cx="95" cy="95" r="78"
+              stroke="rgba(110,231,255,.95)" stroke-width="14" fill="none"
+              stroke-linecap="round"
+              stroke-dasharray="0 999"></circle>
+          </svg>
+          <div class="center">
+            <div id="breathCue" class="breathCue muted">准备</div>
+            <div class="timer" id="timeText">00</div>
+            <div class="centerSmall" id="centerSmall">轻松自然呼吸</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress">
+        <span class="pill" id="setPill">组：0/0</span>
+        <span class="pill" id="repPill">次：0/0</span>
+        <span class="pill" id="nextPill">下一步：—</span>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="startBtn">开始</button>
+        <button id="pauseBtn">暂停</button>
+        <button class="danger" id="resetBtn">重置</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div style="font-weight:800;">训练参数</div>
+          <div class="pill" id="planLabel">自定义</div>
+        </div>
+
+        <div class="settings">
+          <div>
+            <label>方案</label>
+            <select id="planSelect">
+              <option value="custom">自定义</option>
+              <option value="beginner">初级（5秒/5秒，10次×3组）</option>
+              <option value="progress">进阶（8秒/8秒，12次×3组）</option>
+              <option value="quick">快速（1秒/1秒，10次×3组）</option>
+            </select>
+          </div>
+          <div>
+            <label>组间休息（秒）</label>
+            <input id="betweenSetRest" type="number" min="0" step="1" value="30" />
+          </div>
+
+          <div>
+            <label>收缩（秒）</label>
+            <input id="squeezeSec" type="number" min="1" step="1" value="5" />
+          </div>
+          <div>
+            <label>放松（秒）</label>
+            <input id="relaxSec" type="number" min="1" step="1" value="5" />
+          </div>
+
+          <div>
+            <label>每组次数</label>
+            <input id="reps" type="number" min="1" step="1" value="10" />
+          </div>
+          <div>
+            <label>组数</label>
+            <input id="sets" type="number" min="1" step="1" value="3" />
+          </div>
+        </div>
+
+        <div class="toggles">
+          <label class="toggle"><input type="checkbox" id="beepToggle" checked />哔声提示</label>
+          <label class="toggle"><input type="checkbox" id="voiceToggle" />语音提示（中文）</label>
+          <label class="toggle"><input type="checkbox" id="breathToggle" checked />呼吸配合（收缩呼气/放松吸气）</label>
+          <label class="toggle"><input type="checkbox" id="vibrateToggle" />震动提示（支持则生效）</label>
+          <label class="toggle"><input type="checkbox" id="wakeLockToggle" />保持屏幕常亮（支持则生效）</label>
+        </div>
+
+        <div class="hint">
+          提醒：只收缩盆底肌，别憋气、别夹大腿、别用力收腹。若出现疼痛/不适请停止并咨询医生或盆底康复师。
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      提示：手机浏览器通常要求你点击“开始”后才能播放提示音。若静音/媒体音量过低会听不到。
+    </div>
+  </div>
+
+<script>
+(() => {
+  // ---------- DOM ----------
+  const phaseText = document.getElementById('phaseText');
+  const timeText  = document.getElementById('timeText');
+  const setPill   = document.getElementById('setPill');
+  const repPill   = document.getElementById('repPill');
+  const nextPill  = document.getElementById('nextPill');
+  const audioState= document.getElementById('audioState');
+
+  const startBtn  = document.getElementById('startBtn');
+  const pauseBtn  = document.getElementById('pauseBtn');
+  const resetBtn  = document.getElementById('resetBtn');
+
+  const planSelect= document.getElementById('planSelect');
+  const planLabel = document.getElementById('planLabel');
+
+  const squeezeSecInput = document.getElementById('squeezeSec');
+  const relaxSecInput   = document.getElementById('relaxSec');
+  const repsInput       = document.getElementById('reps');
+  const setsInput       = document.getElementById('sets');
+  const betweenSetRestInput = document.getElementById('betweenSetRest');
+
+  const beepToggle   = document.getElementById('beepToggle');
+  const voiceToggle  = document.getElementById('voiceToggle');
+  const breathToggle = document.getElementById('breathToggle');
+  const vibrateToggle= document.getElementById('vibrateToggle');
+  const wakeLockToggle= document.getElementById('wakeLockToggle');
+
+  const breathCueEl  = document.getElementById('breathCue');
+  const centerSmall  = document.getElementById('centerSmall');
+
+  // ring
+  const ringProgress = document.getElementById('ringProgress');
+  const R = 78;
+  const CIRC = 2 * Math.PI * R;
+
+  // ---------- State ----------
+  let timer = null;
+  let running = false;
+
+  let cfg = getConfigFromInputs();
+
+  // phases: "ready" -> "squeeze" -> "relax" ... -> "between_rest" -> done
+  let phase = "ready";
+  let remaining = 3;      // seconds remaining in current phase
+  let phaseTotal = 3;     // total seconds for current phase (for ring)
+  let currentSet = 1;
+  let currentRep = 1;
+
+  // ---------- Audio ----------
+  let audioCtx = null;
+  let audioUnlocked = false;
+
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      gain.gain.value = 0.0001;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.01);
+      audioUnlocked = true;
+      audioState.textContent = "🔊 声音已解锁";
+    } catch (e) {
+      audioState.textContent = "⚠️ 无法初始化音频";
+    }
+  }
+
+  function beep(durationMs = 140, freq = 880) {
+    if (!beepToggle.checked) return;
+    if (!audioCtx) return;
+    const t0 = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durationMs/1000);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t0);
+    osc.stop(t0 + durationMs/1000 + 0.02);
+  }
+
+  function speak(text) {
+    if (!voiceToggle.checked) return;
+    if (!("speechSynthesis" in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "zh-CN";
+      u.rate = 1.0;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+
+  function vibrate(pattern) {
+    if (!vibrateToggle.checked) return;
+    if (!navigator.vibrate) return;
+    navigator.vibrate(pattern);
+  }
+
+  // ---------- Wake Lock ----------
+  let wakeLock = null;
+  async function setWakeLock(on) {
+    if (!("wakeLock" in navigator)) return;
+    try {
+      if (on && !wakeLock) {
+        wakeLock = await navigator.wakeLock.request("screen");
+      } else if (!on && wakeLock) {
+        await wakeLock.release();
+        wakeLock = null;
+      }
+    } catch (_) {}
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (wakeLockToggle.checked && document.visibilityState === "visible") {
+      setWakeLock(true);
+    }
+  });
+
+  // ---------- Config ----------
+  function clampInt(v, min, max){
+    const n = parseInt(v, 10);
+    if (Number.isNaN(n)) return min;
+    return Math.max(min, Math.min(max, n));
+  }
+  function getConfigFromInputs() {
+    const squeeze = clampInt(squeezeSecInput.value, 1, 999);
+    const relax   = clampInt(relaxSecInput.value, 1, 999);
+    const reps    = clampInt(repsInput.value, 1, 999);
+    const sets    = clampInt(setsInput.value, 1, 99);
+    const between = clampInt(betweenSetRestInput.value, 0, 999);
+    return { squeeze, relax, reps, sets, between };
+  }
+
+  function applyPlan(plan) {
+    if (plan === "beginner") {
+      squeezeSecInput.value = 5;  relaxSecInput.value = 5;
+      repsInput.value = 10;       setsInput.value = 3;
+      betweenSetRestInput.value = 30;
+      planLabel.textContent = "初级";
+    } else if (plan === "progress") {
+      squeezeSecInput.value = 8;  relaxSecInput.value = 8;
+      repsInput.value = 12;       setsInput.value = 3;
+      betweenSetRestInput.value = 30;
+      planLabel.textContent = "进阶";
+    } else if (plan === "quick") {
+      squeezeSecInput.value = 1;  relaxSecInput.value = 1;
+      repsInput.value = 10;       setsInput.value = 3;
+      betweenSetRestInput.value = 20;
+      planLabel.textContent = "快速";
+    } else {
+      planLabel.textContent = "自定义";
+    }
+    cfg = getConfigFromInputs();
+    if (!running) render();
+  }
+
+  planSelect.addEventListener("change", () => applyPlan(planSelect.value));
+  [squeezeSecInput, relaxSecInput, repsInput, setsInput, betweenSetRestInput].forEach(el => {
+    el.addEventListener("input", () => {
+      planSelect.value = "custom";
+      planLabel.textContent = "自定义";
+      cfg = getConfigFromInputs();
+      if (!running) render();
+    });
+  });
+
+  // ---------- UI helpers ----------
+  function fmtSec(s){ return String(s).padStart(2, "0"); }
+
+  function setRingProgress(p) {
+    // p: 0..1
+    const clamped = Math.max(0, Math.min(1, p));
+    const dash = (clamped * CIRC).toFixed(2);
+    ringProgress.setAttribute("stroke-dasharray", `${dash} ${CIRC.toFixed(2)}`);
+  }
+
+  function setRingColorForPhase(p){
+    // 使用同一色系：收缩偏蓝、放松偏绿、休息偏灰
+    if (p === "squeeze") ringProgress.setAttribute("stroke", "rgba(110,231,255,.95)");
+    else if (p === "relax") ringProgress.setAttribute("stroke", "rgba(109,255,154,.95)");
+    else ringProgress.setAttribute("stroke", "rgba(255,255,255,.35)");
+  }
+
+  function setBreathCue(phase){
+    // breathToggle: 收缩=呼气，放松=吸气
+    if (!breathToggle.checked){
+      breathCueEl.textContent = "按提示训练";
+      breathCueEl.className = "breathCue muted";
+      centerSmall.textContent = "保持自然呼吸，不憋气";
+      return;
+    }
+
+    if (phase === "squeeze"){
+      breathCueEl.textContent = "呼气";
+      breathCueEl.className = "breathCue breatheOut";
+      centerSmall.textContent = "轻轻收缩盆底肌（提肛）";
+    } else if (phase === "relax"){
+      breathCueEl.textContent = "吸气";
+      breathCueEl.className = "breathCue breatheIn";
+      centerSmall.textContent = "完全放松，不要夹紧";
+    } else if (phase === "between_rest"){
+      breathCueEl.textContent = "自然呼吸";
+      breathCueEl.className = "breathCue muted";
+      centerSmall.textContent = "组间休息，放松肩颈";
+    } else if (phase === "ready"){
+      breathCueEl.textContent = "准备";
+      breathCueEl.className = "breathCue muted";
+      centerSmall.textContent = "就位，轻松呼吸";
+    } else if (phase === "done"){
+      breathCueEl.textContent = "完成";
+      breathCueEl.className = "breathCue breatheIn";
+      centerSmall.textContent = "很好，今日训练结束";
+    } else {
+      breathCueEl.textContent = "—";
+      breathCueEl.className = "breathCue muted";
+      centerSmall.textContent = "";
+    }
+  }
+
+  // ---------- Engine ----------
+  function setPhase(newPhase, sec, announceText){
+    phase = newPhase;
+    phaseTotal = Math.max(1, sec);
+    remaining = sec;
+
+    setRingColorForPhase(newPhase);
+
+    // cues
+    beep();
+    if (announceText) speak(announceText);
+
+    // breath voice prompt
+    if (breathToggle.checked){
+      if (newPhase === "squeeze") speak("呼气");
+      if (newPhase === "relax") speak("吸气");
+    }
+
+    if (newPhase === "squeeze") vibrate([80, 40, 80]);
+    if (newPhase === "relax") vibrate([120]);
+    if (newPhase === "between_rest") vibrate([200, 80, 200]);
+
+    render();
+  }
+
+  function nextStep(){
+    if (phase === "ready") {
+      currentSet = 1; currentRep = 1;
+      setPhase("squeeze", cfg.squeeze, "收缩");
+      return;
+    }
+
+    if (phase === "squeeze") {
+      setPhase("relax", cfg.relax, "放松");
+      return;
+    }
+
+    if (phase === "relax") {
+      if (currentRep < cfg.reps) {
+        currentRep++;
+        setPhase("squeeze", cfg.squeeze, "收缩");
+      } else {
+        if (currentSet < cfg.sets) {
+          currentSet++;
+          currentRep = 1;
+          if (cfg.between > 0) setPhase("between_rest", cfg.between, "休息");
+          else setPhase("squeeze", cfg.squeeze, "收缩");
+        } else {
+          phase = "done";
+          remaining = 0;
+          phaseTotal = 1;
+          setRingColorForPhase("done");
+          setRingProgress(1);
+          beep(240, 660);
+          speak("训练结束");
+          vibrate([200, 100, 200, 100, 300]);
+          stop();
+          render();
+        }
+      }
+      return;
+    }
+
+    if (phase === "between_rest") {
+      setPhase("squeeze", cfg.squeeze, "收缩");
+      return;
+    }
+  }
+
+  function tick(){
+    if (!running) return;
+    remaining--;
+    if (remaining <= 0) {
+      nextStep();
+    } else {
+      if (remaining === 1) beep(90, 1040);
+      render();
+    }
+  }
+
+  function start(){
+    unlockAudio();
+    cfg = getConfigFromInputs();
+    if (wakeLockToggle.checked) setWakeLock(true);
+
+    if (phase === "done") resetState();
+
+    if (!running) {
+      running = true;
+      if (phase === "ready") {
+        remaining = 3;
+        phaseTotal = 3;
+        setRingColorForPhase("ready");
+        speak("准备开始");
+        beep(180, 740);
+      }
+      timer = setInterval(tick, 1000);
+      render();
+    }
+  }
+
+  function stop(){
+    running = false;
+    if (timer) clearInterval(timer);
+    timer = null;
+    if (!wakeLockToggle.checked) setWakeLock(false);
+  }
+
+  function pause(){
+    if (!running) return;
+    stop();
+    speak("已暂停");
+    render();
+  }
+
+  function resetState(){
+    stop();
+    cfg = getConfigFromInputs();
+    phase = "ready";
+    remaining = 3;
+    phaseTotal = 3;
+    currentSet = 1;
+    currentRep = 1;
+    setRingColorForPhase("ready");
+    setRingProgress(0);
+  }
+
+  function reset(){
+    resetState();
+    speak("已重置");
+    render();
+  }
+
+  function phaseLabel(p){
+    if (p === "ready") return {text:"准备", cls:"rest"};
+    if (p === "squeeze") return {text:"收缩（提肛）", cls:"sq"};
+    if (p === "relax") return {text:"放松", cls:"fx"};
+    if (p === "between_rest") return {text:"组间休息", cls:"rest"};
+    if (p === "done") return {text:"完成 ✅", cls:"fx"};
+    return {text:"—", cls:"rest"};
+  }
+
+  function nextLabel(){
+    if (phase === "ready") return "收缩";
+    if (phase === "squeeze") return "放松";
+    if (phase === "relax") {
+      if (currentRep < cfg.reps) return "收缩";
+      if (currentSet < cfg.sets) return cfg.between > 0 ? "休息" : "收缩";
+      return "结束";
+    }
+    if (phase === "between_rest") return "收缩";
+    return "—";
+  }
+
+  function render(){
+    const pl = phaseLabel(phase);
+    phaseText.textContent = pl.text;
+    phaseText.className = "phase " + pl.cls;
+
+    timeText.textContent = fmtSec(Math.max(0, remaining));
+
+    setPill.textContent = `组：${Math.min(currentSet, cfg.sets)}/${cfg.sets}`;
+    repPill.textContent = `次：${Math.min(currentRep, cfg.reps)}/${cfg.reps}`;
+    nextPill.textContent = `下一步：${nextLabel()}`;
+
+    // ring progress: 显示“已完成比例”
+    // remaining 从 phaseTotal -> 1，进度应从 0 -> 1
+    if (phase === "done") {
+      setRingProgress(1);
+    } else {
+      const done = (phaseTotal - remaining) / phaseTotal;
+      setRingProgress(done);
+    }
+    setBreathCue(phase);
+
+    startBtn.textContent = running ? "进行中" : (phase === "ready" ? "开始" : "继续");
+    startBtn.disabled = running;
+  }
+
+  // ---------- Events ----------
+  startBtn.addEventListener("click", start);
+  pauseBtn.addEventListener("click", pause);
+  resetBtn.addEventListener("click", reset);
+
+  document.getElementById("statusCard").addEventListener("click", () => unlockAudio(), {passive:true});
+  wakeLockToggle.addEventListener("change", () => setWakeLock(wakeLockToggle.checked && running));
+
+  // init
+  applyPlan("custom");
+  resetState();
+  render();
+})();
+</script>
+</body>
+</html>
