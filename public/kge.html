@@ -1,0 +1,743 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2299.77">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!doctype html&gt;</p>
+<p class="p1">&lt;html lang="zh-CN"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="theme-color" content="#0b1220" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;训练计时器&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg:#0b1220;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--card:#121a2b;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--text:#eaf0ff;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--muted:#aab6d6;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent:#6ee7ff;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--danger:#ff6b6b;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--ok:#6dff9a;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--shadow: 0 10px 30px rgba(0,0,0,.35);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--radius: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>*{box-sizing:border-box}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: radial-gradient(1200px 800px at 50% -200px, rgba(110,231,255,.18), transparent 60%) , var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>min-height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:flex-start;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.wrap{width:min(720px, 100%); padding:16px 0 28px;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>header{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; justify-content:space-between; align-items:flex-end;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap:12px; margin: 8px 4px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1{margin:0; font-size:18px; font-weight:700; letter-spacing:.5px;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sub{margin:0; font-size:12px; color:var(--muted)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,.08);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: var(--radius);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: var(--shadow);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; flex-direction:column; gap:10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-align:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px 14px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 22px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight:800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.6px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase.sq{color: var(--accent)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase.fx{color: var(--ok)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.phase.rest{color: var(--muted)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.timer{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-variant-numeric: tabular-nums;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 68px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height: 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 900;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing: 1px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ---------- Rhythm Ring ---------- */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.ringWrap{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 6px 0 2px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.ring{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 190px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height: 190px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>place-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.ring svg{transform: rotate(-90deg);}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.ring .center{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>position:absolute;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>inset:0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex-direction:column;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content:center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap:6px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>pointer-events:none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.breathCue{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 900;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.4px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.breathCue.muted{color: var(--muted)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.breathCue.breatheOut{color: var(--accent)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.breathCue.breatheIn{color: var(--ok)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.centerSmall{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.progress{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 13px; color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; justify-content:center; gap:10px; flex-wrap:wrap;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.pill{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 6px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 999px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.06);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,.08);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.controls{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 1fr 1fr 1fr;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>appearance:none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,.12);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.06);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 800;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing:.3px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 6px 18px rgba(0,0,0,.25);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>touch-action: manipulation;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button:active{transform: translateY(1px)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button.primary{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(180deg, rgba(110,231,255,.22), rgba(110,231,255,.10));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(110,231,255,.35);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button.danger{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: linear-gradient(180deg, rgba(255,107,107,.22), rgba(255,107,107,.10));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: rgba(255,107,107,.35);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.grid{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid; gap:12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 1fr;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.settings{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>grid-template-columns: 1fr 1fr;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input, select{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width:100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,.12);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(0,0,0,.18);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>outline: none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggles{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; flex-wrap:wrap; gap:10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggle{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display:flex; align-items:center; gap:8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(255,255,255,.06);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid rgba(255,255,255,.10);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>user-select:none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.toggle input{width:18px; height:18px;}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.hint{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 10px 2px 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height: 1.55;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.footer{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--muted);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line-height: 1.6;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1&gt;训练计时器&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="sub"&gt;按提示：S → F（配合呼吸）&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="pill" id="audioState"&gt;🔇 未解锁声音&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card status" id="statusCard"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="phase rest" id="phaseText"&gt;准备&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Rhythm Ring --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="ringWrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="ring" aria-label="节奏圆环"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;svg width="190" height="190" viewBox="0 0 190 190" role="img"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- track --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle cx="95" cy="95" r="78"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>stroke="rgba(255,255,255,.10)" stroke-width="14" fill="none"&gt;&lt;/circle&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- progress --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;circle id="ringProgress" cx="95" cy="95" r="78"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>stroke="rgba(110,231,255,.95)" stroke-width="14" fill="none"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>stroke-linecap="round"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>stroke-dasharray="0 999"&gt;&lt;/circle&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="breathCue" class="breathCue muted"&gt;准备&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="timer" id="timeText"&gt;00&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="centerSmall" id="centerSmall"&gt;轻松自然呼吸&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="progress"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="pill" id="setPill"&gt;组：0/0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="pill" id="repPill"&gt;次：0/0&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="pill" id="nextPill"&gt;下一步：—&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="primary" id="startBtn"&gt;开始&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="pauseBtn"&gt;暂停&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="danger" id="resetBtn"&gt;重置&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="grid"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-weight:800;"&gt;训练参数&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="pill" id="planLabel"&gt;自定义&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="settings"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;方案&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="planSelect"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="custom"&gt;自定义&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="beginner"&gt;初级（5秒/5秒，10次×3组）&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="progress"&gt;进阶（8秒/8秒，12次×3组）&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;option value="quick"&gt;快速（1秒/1秒，10次×3组）&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;组间休息（秒）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="betweenSetRest" type="number" min="0" step="1" value="30" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;S（秒）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="squeezeSec" type="number" min="1" step="1" value="5" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;F（秒）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="relaxSec" type="number" min="1" step="1" value="5" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;每组次数&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="reps" type="number" min="1" step="1" value="10" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;组数&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input id="sets" type="number" min="1" step="1" value="3" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="toggles"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="beepToggle" checked /&gt;哔声提示&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="voiceToggle" /&gt;语音提示（中文）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="breathToggle" checked /&gt;呼吸配合（S呼气/F吸气）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="vibrateToggle" /&gt;震动提示（支持则生效）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;label class="toggle"&gt;&lt;input type="checkbox" id="wakeLockToggle" /&gt;保持屏幕常亮（支持则生效）&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="hint"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>提示：手机浏览器通常要求你点击“开始”后才能播放提示音。若静音/媒体音量过低会听不到。</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- DOM ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const phaseText = document.getElementById('phaseText');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const timeText<span class="Apple-converted-space">  </span>= document.getElementById('timeText');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const setPill <span class="Apple-converted-space">  </span>= document.getElementById('setPill');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const repPill <span class="Apple-converted-space">  </span>= document.getElementById('repPill');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const nextPill<span class="Apple-converted-space">  </span>= document.getElementById('nextPill');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const audioState= document.getElementById('audioState');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const startBtn<span class="Apple-converted-space">  </span>= document.getElementById('startBtn');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const pauseBtn<span class="Apple-converted-space">  </span>= document.getElementById('pauseBtn');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const resetBtn<span class="Apple-converted-space">  </span>= document.getElementById('resetBtn');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const planSelect= document.getElementById('planSelect');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const planLabel = document.getElementById('planLabel');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const squeezeSecInput = document.getElementById('squeezeSec');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const relaxSecInput <span class="Apple-converted-space">  </span>= document.getElementById('relaxSec');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const repsInput <span class="Apple-converted-space">      </span>= document.getElementById('reps');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const setsInput <span class="Apple-converted-space">      </span>= document.getElementById('sets');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const betweenSetRestInput = document.getElementById('betweenSetRest');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const beepToggle <span class="Apple-converted-space">  </span>= document.getElementById('beepToggle');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const voiceToggle<span class="Apple-converted-space">  </span>= document.getElementById('voiceToggle');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const breathToggle = document.getElementById('breathToggle');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const vibrateToggle= document.getElementById('vibrateToggle');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const wakeLockToggle= document.getElementById('wakeLockToggle');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const breathCueEl<span class="Apple-converted-space">  </span>= document.getElementById('breathCue');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const centerSmall<span class="Apple-converted-space">  </span>= document.getElementById('centerSmall');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ring</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const ringProgress = document.getElementById('ringProgress');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const R = 78;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const CIRC = 2 * Math.PI * R;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- State ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let timer = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let running = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>let cfg = getConfigFromInputs();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// phases: "ready" -&gt; "squeeze" -&gt; "relax" ... -&gt; "between_rest" -&gt; done</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let phase = "ready";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let remaining = 3;<span class="Apple-converted-space">      </span>// seconds remaining in current phase</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let phaseTotal = 3; <span class="Apple-converted-space">    </span>// total seconds for current phase (for ring)</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let currentSet = 1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let currentRep = 1;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- Audio ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let audioCtx = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let audioUnlocked = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function unlockAudio() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (audioUnlocked) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const osc = audioCtx.createOscillator();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const gain = audioCtx.createGain();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>osc.type = "sine";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>osc.frequency.value = 880;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gain.gain.value = 0.0001;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>osc.connect(gain).connect(audioCtx.destination);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>osc.start();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>osc.stop(audioCtx.currentTime + 0.01);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audioUnlocked = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audioState.textContent = "🔊 声音已解锁";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (e) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>audioState.textContent = "⚠️ 无法初始化音频";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function beep(durationMs = 140, freq = 880) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!beepToggle.checked) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!audioCtx) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const t0 = audioCtx.currentTime;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const osc = audioCtx.createOscillator();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const gain = audioCtx.createGain();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.type = "sine";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.frequency.value = freq;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gain.gain.setValueAtTime(0.0001, t0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.01);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durationMs/1000);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.connect(gain).connect(audioCtx.destination);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.start(t0);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>osc.stop(t0 + durationMs/1000 + 0.02);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function speak(text) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!voiceToggle.checked) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!("speechSynthesis" in window)) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>window.speechSynthesis.cancel();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const u = new SpeechSynthesisUtterance(text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>u.lang = "zh-CN";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>u.rate = 1.0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>u.pitch = 1.0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>window.speechSynthesis.speak(u);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (_) {}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function vibrate(pattern) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!vibrateToggle.checked) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!navigator.vibrate) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>navigator.vibrate(pattern);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- Wake Lock ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let wakeLock = null;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function setWakeLock(on) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!("wakeLock" in navigator)) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (on &amp;&amp; !wakeLock) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>wakeLock = await navigator.wakeLock.request("screen");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else if (!on &amp;&amp; wakeLock) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>await wakeLock.release();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>wakeLock = null;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (_) {}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.addEventListener("visibilitychange", () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (wakeLockToggle.checked &amp;&amp; document.visibilityState === "visible") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setWakeLock(true);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- Config ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function clampInt(v, min, max){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const n = parseInt(v, 10);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (Number.isNaN(n)) return min;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return Math.max(min, Math.min(max, n));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function getConfigFromInputs() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const squeeze = clampInt(squeezeSecInput.value, 1, 999);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const relax <span class="Apple-converted-space">  </span>= clampInt(relaxSecInput.value, 1, 999);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const reps<span class="Apple-converted-space">    </span>= clampInt(repsInput.value, 1, 999);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const sets<span class="Apple-converted-space">    </span>= clampInt(setsInput.value, 1, 99);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const between = clampInt(betweenSetRestInput.value, 0, 999);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return { squeeze, relax, reps, sets, between };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function applyPlan(plan) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (plan === "beginner") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>squeezeSecInput.value = 5;<span class="Apple-converted-space">  </span>relaxSecInput.value = 5;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>repsInput.value = 10; <span class="Apple-converted-space">      </span>setsInput.value = 3;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>betweenSetRestInput.value = 30;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planLabel.textContent = "初级";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (plan === "progress") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>squeezeSecInput.value = 8;<span class="Apple-converted-space">  </span>relaxSecInput.value = 8;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>repsInput.value = 12; <span class="Apple-converted-space">      </span>setsInput.value = 3;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>betweenSetRestInput.value = 30;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planLabel.textContent = "进阶";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (plan === "quick") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>squeezeSecInput.value = 1;<span class="Apple-converted-space">  </span>relaxSecInput.value = 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>repsInput.value = 10; <span class="Apple-converted-space">      </span>setsInput.value = 3;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>betweenSetRestInput.value = 20;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planLabel.textContent = "快速";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planLabel.textContent = "自定义";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cfg = getConfigFromInputs();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!running) render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>planSelect.addEventListener("change", () =&gt; applyPlan(planSelect.value));</p>
+<p class="p1"><span class="Apple-converted-space">  </span>[squeezeSecInput, relaxSecInput, repsInput, setsInput, betweenSetRestInput].forEach(el =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>el.addEventListener("input", () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planSelect.value = "custom";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>planLabel.textContent = "自定义";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cfg = getConfigFromInputs();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!running) render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- UI helpers ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function fmtSec(s){ return String(s).padStart(2, "0"); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setRingProgress(p) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// p: 0..1</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const clamped = Math.max(0, Math.min(1, p));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const dash = (clamped * CIRC).toFixed(2);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ringProgress.setAttribute("stroke-dasharray", `${dash} ${CIRC.toFixed(2)}`);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setRingColorForPhase(p){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 使用同一色系：S偏蓝、F偏绿、休息偏灰</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "squeeze") ringProgress.setAttribute("stroke", "rgba(110,231,255,.95)");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else if (p === "relax") ringProgress.setAttribute("stroke", "rgba(109,255,154,.95)");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>else ringProgress.setAttribute("stroke", "rgba(255,255,255,.35)");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setBreathCue(phase){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// breathToggle: S=呼气，F=吸气</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!breathToggle.checked){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "按提示训练";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue muted";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "保持自然呼吸，不憋气";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "squeeze"){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "呼气";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue breatheOut";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "轻轻S";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (phase === "relax"){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "吸气";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue breatheIn";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "完全F";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (phase === "between_rest"){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "自然呼吸";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue muted";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "组间休息，F肩颈";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (phase === "ready"){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "准备";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue muted";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "就位，轻松呼吸";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else if (phase === "done"){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "完成";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue breatheIn";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "很好，今日训练结束";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.textContent = "—";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>breathCueEl.className = "breathCue muted";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>centerSmall.textContent = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- Engine ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function setPhase(newPhase, sec, announceText){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phase = newPhase;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phaseTotal = Math.max(1, sec);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>remaining = sec;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setRingColorForPhase(newPhase);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// cues</p>
+<p class="p1"><span class="Apple-converted-space">    </span>beep();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (announceText) speak(announceText);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// breath voice prompt</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (breathToggle.checked){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (newPhase === "squeeze") speak("呼气");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (newPhase === "relax") speak("吸气");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (newPhase === "squeeze") vibrate([80, 40, 80]);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (newPhase === "relax") vibrate([120]);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (newPhase === "between_rest") vibrate([200, 80, 200]);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function nextStep(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "ready") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>currentSet = 1; currentRep = 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setPhase("squeeze", cfg.squeeze, "S");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "squeeze") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setPhase("relax", cfg.relax, "F");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "relax") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (currentRep &lt; cfg.reps) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>currentRep++;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setPhase("squeeze", cfg.squeeze, "S");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (currentSet &lt; cfg.sets) {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>currentSet++;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>currentRep = 1;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>if (cfg.between &gt; 0) setPhase("between_rest", cfg.between, "休息");</p>
+<p class="p1"><span class="Apple-converted-space">          </span>else setPhase("squeeze", cfg.squeeze, "S");</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>phase = "done";</p>
+<p class="p1"><span class="Apple-converted-space">          </span>remaining = 0;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>phaseTotal = 1;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setRingColorForPhase("done");</p>
+<p class="p1"><span class="Apple-converted-space">          </span>setRingProgress(1);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>beep(240, 660);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>speak("训练结束");</p>
+<p class="p1"><span class="Apple-converted-space">          </span>vibrate([200, 100, 200, 100, 300]);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>stop();</p>
+<p class="p1"><span class="Apple-converted-space">          </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "between_rest") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setPhase("squeeze", cfg.squeeze, "S");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function tick(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!running) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>remaining--;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (remaining &lt;= 0) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>nextStep();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (remaining === 1) beep(90, 1040);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function start(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>unlockAudio();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cfg = getConfigFromInputs();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (wakeLockToggle.checked) setWakeLock(true);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "done") resetState();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!running) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>running = true;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (phase === "ready") {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>remaining = 3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>phaseTotal = 3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>setRingColorForPhase("ready");</p>
+<p class="p1"><span class="Apple-converted-space">        </span>speak("准备开始");</p>
+<p class="p1"><span class="Apple-converted-space">        </span>beep(180, 740);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>timer = setInterval(tick, 1000);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function stop(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>running = false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (timer) clearInterval(timer);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>timer = null;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!wakeLockToggle.checked) setWakeLock(false);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function pause(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!running) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>stop();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>speak("已暂停");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function resetState(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>stop();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cfg = getConfigFromInputs();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phase = "ready";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>remaining = 3;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phaseTotal = 3;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>currentSet = 1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>currentRep = 1;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setRingColorForPhase("ready");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setRingProgress(0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function reset(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>resetState();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>speak("已重置");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function phaseLabel(p){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "ready") return {text:"准备", cls:"rest"};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "squeeze") return {text:"S", cls:"sq"};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "relax") return {text:"F", cls:"fx"};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "between_rest") return {text:"组间休息", cls:"rest"};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (p === "done") return {text:"完成 ✅", cls:"fx"};</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return {text:"—", cls:"rest"};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function nextLabel(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "ready") return "S";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "squeeze") return "F";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "relax") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (currentRep &lt; cfg.reps) return "S";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (currentSet &lt; cfg.sets) return cfg.between &gt; 0 ? "休息" : "S";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return "结束";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "between_rest") return "S";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return "—";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function render(){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const pl = phaseLabel(phase);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phaseText.textContent = pl.text;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>phaseText.className = "phase " + pl.cls;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>timeText.textContent = fmtSec(Math.max(0, remaining));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>setPill.textContent = `组：${Math.min(currentSet, cfg.sets)}/${cfg.sets}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>repPill.textContent = `次：${Math.min(currentRep, cfg.reps)}/${cfg.reps}`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>nextPill.textContent = `下一步：${nextLabel()}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// ring progress: 显示“已完成比例”</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// remaining 从 phaseTotal -&gt; 1，进度应从 0 -&gt; 1</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (phase === "done") {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setRingProgress(1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const done = (phaseTotal - remaining) / phaseTotal;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setRingProgress(done);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setBreathCue(phase);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>startBtn.textContent = running ? "进行中" : (phase === "ready" ? "开始" : "继续");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>startBtn.disabled = running;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// ---------- Events ----------</p>
+<p class="p1"><span class="Apple-converted-space">  </span>startBtn.addEventListener("click", start);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>pauseBtn.addEventListener("click", pause);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>resetBtn.addEventListener("click", reset);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById("statusCard").addEventListener("click", () =&gt; unlockAudio(), {passive:true});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>wakeLockToggle.addEventListener("change", () =&gt; setWakeLock(wakeLockToggle.checked &amp;&amp; running));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// init</p>
+<p class="p1"><span class="Apple-converted-space">  </span>applyPlan("custom");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>resetState();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>render();</p>
+<p class="p1">})();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
